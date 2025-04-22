@@ -78,8 +78,6 @@ fabricApi {
 }
 
 loom {
-    splitEnvironmentSourceSets()
-
     runtimeOnlyLog4j = true
 
     mixin {
@@ -89,7 +87,6 @@ loom {
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
-            sourceSet sourceSets.client
         }
     }
 
