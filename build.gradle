@@ -1,0 +1,478 @@
+import net.fabricmc.loom.task.ValidateMixinNameTask
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = "https://maven.fabricmc.net/" }
+    }
+}
+
+plugins {
+    id 'idea'
+    id 'fabric-loom' version '1.10.+'
+    id 'maven-publish'
+    id "net.darkhax.curseforgegradle" version "1.1.15"
+    id "com.modrinth.minotaur" version "2.+"
+}
+
+def debugArgs = [
+        "-enableassertions",
+        "-Dmixin.debug.verify=true",
+        //"-Dmixin.debug.strict=true",
+        //"-Dmixin.debug.countInjections=true",
+        "-XX:+AllowEnhancedClassRedefinition"
+]
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+repositories {
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name "CurseForge"
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+group = project.mod_group_id
+version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
+logger.lifecycle("${project.name} version: ${project.version}")
+
+base {
+    archivesName = "${project.mod_id}"
+}
+
+fabricApi {
+    configureDataGeneration {
+        setModId(project.mod_id)
+        setOutputDirectory(getProject().file("src/generated/resources")) // Set output directory to the same as the forge version
+        setClient(true)
+    }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    runtimeOnlyLog4j = true
+
+    mixin {
+        useLegacyMixinAp = false
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+
+    runs {
+        client {
+            client()
+
+            configName = "Minecraft Client ${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/client"
+            programArg("--username Dev")
+
+            if (System.getenv("HOTSWAP_AGENT") != null) {
+                property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
+                vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
+                vmArg("--add-opens=java.base/java.io=ALL-UNNAMED")
+                vmArg("--add-opens=java.desktop/java.beans=ALL-UNNAMED")
+                vmArg("--add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED")
+            }
+
+            try {
+                afterEvaluate {
+                    def mixinDep = this.configurations.compileClasspath.incoming.artifactView {
+                        componentFilter {
+                            it instanceof ModuleComponentIdentifier
+                                    && it.module == "sponge-mixin"
+                        }
+                    }
+
+                    if (mixin != null) {
+                        vmArg("-javaagent:${mixinDep.files.first().path}")
+                        println("[Info]: Mixin Hotswap setup finished")
+                    } else {
+                        println("[Warning]: Unable to locate file path for Mixin jar")
+                    }
+                }
+            } catch (Exception e) {
+                println("[Error]: Mixin Hotswap setup failed!")
+                e.printStackTrace()
+            }
+        }
+
+        server {
+            server()
+
+            configName = "Minecraft Server ${project.minecraft_version}"
+            runDir "run/${project.minecraft_version}/server"
+        }
+    }
+
+    runs.configureEach {
+        vmArgs(debugArgs)
+    }
+}
+
+configurations.configureEach {
+    resolutionStrategy {
+        force "net.fabricmc:fabric-loader:$project.loader_version"
+        force "net.fabricmc.fabric-api:fabric-api:$project.fabric_version"
+    }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft("com.mojang:minecraft:${project.minecraft_version}")
+    mappings(loom.layered {
+        it.officialMojangMappings()
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
+    })
+
+    if (project.mixin_extras_version != "none") {
+        include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
+    }
+
+    // Fabric Loader
+    modImplementation("net.fabricmc:fabric-loader:${project.loader_version}")
+
+    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    implementation("com.google.code.findbugs:jsr305:3.0.2")
+
+    // Litematica
+    modCompileOnly("maven.modrinth:malilib:${project.malilib_version}")
+    modCompileOnly("maven.modrinth:litematica:${project.litematica_version}")
+
+    // AudioPlayer compatibility
+    modCompileOnly("maven.modrinth:admiral:${project.admiral_version}")
+    modCompileOnly("maven.modrinth:simple-voice-chat:${project.simple_voice_chat_version}")
+    modCompileOnly("maven.modrinth:audioplayer:${project.audioplayer_version}")
+}
+
+test {
+    dependsOn("processResources")
+
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.register('validateMixinNames', ValidateMixinNameTask) {
+    source(sourceSets.main.output)
+}
+
+def targetJavaVersion = 21
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : "salandora",
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : "salandora",
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+processResources {
+    var replaceProperties = [
+            mod_id              : project.mod_id,
+            mod_name            : project.mod_name,
+            mod_description     : project.mod_description,
+            mod_license         : project.mod_license,
+            mod_version         : version.replace(getStable(), ""), // remove the getStable string so that fabric loader can catch version mismatches, only important for snapshots
+            mod_display_url     : project.mod_display_url,
+            mod_issue_tracker_url: project.mod_issue_tracker_url,
+            mod_sources_url     : project.mod_sources_url,
+            minecraft_version   : project.minecraft_version,
+            loader_version      : project.loader_version
+    ]
+
+    inputs.properties replaceProperties
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties
+    }
+}
+
+static def getBuildNumber() {
+    if (System.getenv("GITHUB_RUN_NUMBER") != null) {
+        return System.getenv("GITHUB_RUN_NUMBER").toString()
+    }
+    return "9999"
+}
+
+static def getStable() {
+    if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
+        return "-SNAPSHOT"
+    }
+    return ""
+}
+
+// configure the maven publication
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("${project.github_package_url}")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register("mavenJava", MavenPublication) {
+            artifactId = mod_id
+            from((SoftwareComponent) components["java"])
+        }
+    }
+}
+
+
+tasks.register('generateChangelog') {
+    doLast {
+        // Function to remove characters with Unicode code points 129 or higher
+        def removeHighUnicodeChars = { text ->
+            text.codePoints()
+                    .filter { codePoint -> codePoint <= 0x007F }  // Keep only ASCII characters (U+0000 to U+007F)
+                    .collect { codePoint -> new String(Character.toChars(codePoint)) }
+                    .join('')
+        }
+
+        // Function to format commit messages with nesting
+        def formatMultilineMessage = { message ->
+            // Split message by lines, trim whitespace, and create formatted list
+            def lines = message.split('\n')
+            def formattedMessage = lines[0].trim() // First line as top-level list item
+            if (lines.size() > 1) {
+                formattedMessage += "\n" + lines[1..-1].collect { line ->
+                    // Trim the line and remove leading dash if present
+                    def trimmedLine = line.trim()
+                    if (trimmedLine.startsWith('-')) {
+                        trimmedLine = trimmedLine.substring(1).trim()
+                    }
+                    "    - ${trimmedLine}" // Nested list for additional lines
+                }.join('\n')
+            }
+            return formattedMessage
+        }
+
+        // Function to remove [DEV] section from commit message
+        def removeDevSection = { message ->
+            def devIndex = message.indexOf('[DEV]')
+            if (devIndex != -1) {
+                return message.substring(0, devIndex).trim()
+            }
+            return message
+        }
+
+        // Get the latest commit hash
+        def latestCommitHash = "git rev-parse HEAD".execute().text.trim()
+
+        // Check if the latest commit is a merge commit
+        def parentCommits = "git rev-list --parents -n 1 ${latestCommitHash}".execute().text.split()
+        logger.info("Parent commits: ${parentCommits}")
+
+        def commitMessages = []
+        if (parentCommits.size() > 2) { // Merge commit has more than 2 parents
+            def firstParent = parentCommits[1]
+            def secondParent = parentCommits[2]
+            def gitLogCommand = [
+                    "bash", "-c", "git log --pretty=format:%B ${firstParent}..${secondParent}"
+            ]
+            commitMessages = gitLogCommand.execute().text.split('\n\n')  // Split by two newlines for each commit
+            logger.info("Merge commit, ran git log command: ${gitLogCommand.join(' ')} and got ${commitMessages}")
+        } else {
+            // Single commit log
+            commitMessages = "git log -1 --pretty=%B".execute().text.split('\n\n')
+            // Split by two newlines for each commit
+            logger.info("Single commit, ran git log command: git log -1 --pretty=%B and got ${commitMessages}");
+        }
+
+        def generals = []
+        def features = []
+        def fixes = []
+        def compatibility = []
+        def mergedFeatures = []
+        def mergedFixes = []
+        def cleanup = false
+        commitMessages.each { String commitMessage ->
+            commitMessage = removeHighUnicodeChars(commitMessage) // Remove high Unicode characters
+            commitMessage = removeDevSection(commitMessage) // Remove [DEV] section
+
+            if (commitMessage.startsWith('[General]: ')) {
+                generals.add(commitMessage.replaceFirst('\\[General]: ', '').trim())
+            } else if (commitMessage.startsWith('[Feat]: ')) {
+                features.add(commitMessage.replaceFirst('\\[Feat]: ', '').trim())
+            } else if (commitMessage.startsWith('[Fix]: ')) {
+                fixes.add(commitMessage.replaceFirst('\\[Fix]: ', '').trim())
+            } else if (commitMessage.startsWith('[Compatibility]: ')) {
+                compatibility.add(commitMessage.replaceFirst('\\[Compatibility]: ', '').trim())
+            } else if (commitMessage.startsWith('[Cleanup]: ')) {
+                cleanup = true
+            } else if (commitMessage.startsWith('feat: ')) {
+                mergedFeatures.add(commitMessage.replaceFirst('feat: ', '').trim())
+            } else if (commitMessage.startsWith('fix: ')) {
+                mergedFixes.add(commitMessage.replaceFirst('fix: ', '').trim())
+            }
+        }
+
+        def changelog = new StringBuilder()
+
+        changelog.append("# Changelog\n\n")
+
+        changelog.append("### General\n")
+        changelog.append("- Update to version ${project.mod_version}\n")
+        if (cleanup) {
+            changelog.append("- Code cleanup\n")
+        }
+        if (generals) {
+            generals.each { general -> changelog.append("- ${formatMultilineMessage(general)}\n") }
+        }
+        changelog.append("\n")
+
+        if (features) {
+            changelog.append("### Features\n")
+            features.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
+            changelog.append("\n")
+        }
+
+        if (fixes) {
+            changelog.append("### Fixes\n")
+            fixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
+            changelog.append("\n")
+        }
+
+        if (compatibility) {
+            changelog.append("### Compatibility\n")
+            compatibility.each { comp -> changelog.append("- ${formatMultilineMessage(comp)}\n") }
+            changelog.append("\n")
+        }
+
+        if (mergedFeatures || mergedFixes) {
+            changelog.append("\n")
+            changelog.append("## Merged from upstream\n")
+
+            if (mergedFeatures) {
+                changelog.append("### Features\n")
+                mergedFeatures.each { feature -> changelog.append("- ${formatMultilineMessage(feature)}\n") }
+                changelog.append("\n")
+            }
+
+            if (mergedFixes) {
+                changelog.append("### Fixes\n")
+                mergedFixes.each { fix -> changelog.append("- ${formatMultilineMessage(fix)}\n") }
+                changelog.append("\n")
+            }
+        }
+
+        // Store the changelog in a project property or an environment variable
+        logger.info("Compiled changelog: " + changelog.toString())
+        project.ext.changelog = changelog.toString()
+    }
+    project.ext.changelog = ""
+}
+
+/*task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    dependsOn 'generateChangelog'
+
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+    def mainFile = upload(project.curseforge_id, file("${project.layout.buildDirectory.get()}/libs/${base.archivesName.get()}-${version}.jar"))
+    mainFile.changelogType = 'markdown'
+    mainFile.changelog = { project.ext.changelog }
+    mainFile.addModLoader('Fabric')
+    mainFile.releaseType = "${project.release_type}"
+
+    // Game versions
+    mainFile.addGameVersion("${project.release_versions}".split(','))
+
+    // Dependencies
+    mainFile.addRequirement('fabric-api')
+    mainFile.addRequirement('forge-config-api-port-fabric')
+    mainFile.addEmbedded('porting-lib')
+    onlyIf { !project.ext.changelog.isEmpty() }
+}
+
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "${project.modrinth_project_id}"
+    versionType = "${project.release_type}"
+    uploadFile = remapJar
+    gameVersions = "${project.release_versions}".split(',').collect {e -> e}
+    loaders = ["fabric"]
+    dependencies {
+        required.project "fabric-api"
+        required.project "forge-config-api-port"
+        embedded.project "porting_lib"
+    }
+    changelog = provider {
+        project.ext.changelog
+    }
+}
+tasks.modrinth {
+    dependsOn(tasks.generateChangelog)
+    onlyIf { !project.ext.changelog.isEmpty() }
+}*/
