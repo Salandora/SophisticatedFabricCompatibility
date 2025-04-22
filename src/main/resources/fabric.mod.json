@@ -15,7 +15,6 @@
 
   "environment": "*",
   "entrypoints": {
-    "fabric-datagen": ["org.github.salandora.sophisticatedfabriccompat.client.SophisticatedFabricCompatDataGenerator"],
     "client": ["org.github.salandora.sophisticatedfabriccompat.client.SophisticatedFabricCompatClient"],
     "main": ["org.github.salandora.sophisticatedfabriccompat.SophisticatedFabricCompat"]
   },
