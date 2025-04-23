@@ -8,6 +8,7 @@ import org.github.salandora.sophisticatedfabriccompat.compat.CompatRegistry;
 public class SophisticatedFabricCompatClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        CompatRegistry.initClientCompats();
         ClientLifecycleEvents.CLIENT_STARTED.register((Minecraft client) -> CompatRegistry.setupCompats());
     }
 }

@@ -41,6 +41,10 @@ public class CompatRegistry {
 		loadedCompats.values().forEach(compats -> compats.forEach(ICompat::init));
 	}
 
+	public static void initClientCompats() {
+		loadedCompats.values().forEach(compats -> compats.forEach(ICompat::initClient));
+	}
+
 	@Nullable
 	public static VersionPredicate fromSpec(String spec) {
 		try {
