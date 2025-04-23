@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.github.salandora.sophisticatedfabriccompat.compat.CompatRegistry;
+import org.github.salandora.sophisticatedfabriccompat.config.Config;
 import org.github.salandora.sophisticatedfabriccompat.init.ModCompat;
 import org.github.salandora.sophisticatedfabriccompat.init.ModPayloads;
 import org.slf4j.Logger;
@@ -16,6 +17,9 @@ public class SophisticatedFabricCompat implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        if (Config.CONFIG == null) {
+            Config.CONFIG = Config.load();
+        }
         ModPayloads.registerPayloads();
         ModCompat.register();
 
