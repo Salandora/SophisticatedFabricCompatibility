@@ -21,10 +21,7 @@
 
   "mixins": [
     "sophisticatedfabriccompat.mixins.json",
-    {
-      "config": "sophisticatedfabriccompat.client.mixins.json",
-      "environment": "client"
-    }
+    "compat/litematica.mixins.json"
   ],
 
   "depends": {

@@ -111,6 +111,8 @@ repositories {
             includeGroup "curse.maven"
         }
     }
+    maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
+    maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
 }
 
 group = project.mod_group_id
@@ -258,6 +260,7 @@ dependencies {
     // Litematica
     modCompileOnly("maven.modrinth:malilib:${project.malilib_version}")
     modCompileOnly("maven.modrinth:litematica:${project.litematica_version}")
+    modCompileOnly("dev.emi:trinkets:${project.trinkets_version}")
 
     // AudioPlayer compatibility
     modCompileOnly("maven.modrinth:admiral:${project.admiral_version}")
