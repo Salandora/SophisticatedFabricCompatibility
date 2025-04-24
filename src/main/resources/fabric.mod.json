@@ -21,7 +21,8 @@
 
   "mixins": [
     "sophisticatedfabriccompat.mixins.json",
-    "compat/litematica.mixins.json"
+    "compat/litematica.mixins.json",
+    "compat/audioplayer.mixins.json"
   ],
 
   "depends": {

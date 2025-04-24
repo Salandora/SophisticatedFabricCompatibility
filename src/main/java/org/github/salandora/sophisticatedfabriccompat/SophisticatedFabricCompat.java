@@ -7,6 +7,7 @@ import net.minecraft.server.MinecraftServer;
 import org.github.salandora.sophisticatedfabriccompat.compat.CompatRegistry;
 import org.github.salandora.sophisticatedfabriccompat.config.Config;
 import org.github.salandora.sophisticatedfabriccompat.init.ModCompat;
+import org.github.salandora.sophisticatedfabriccompat.init.ModDataComponents;
 import org.github.salandora.sophisticatedfabriccompat.init.ModPayloads;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ public class SophisticatedFabricCompat implements ModInitializer {
         ModCompat.register();
 
         CompatRegistry.initCompats();
+
+        ModDataComponents.register();
         ServerLifecycleEvents.SERVER_STARTING.register((MinecraftServer server) -> CompatRegistry.setupCompats());
     }
 

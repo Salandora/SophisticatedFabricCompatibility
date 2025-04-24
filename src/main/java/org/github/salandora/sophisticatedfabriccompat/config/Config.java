@@ -7,17 +7,19 @@ import java.io.File;
 
 // TODO: This is ugly at best, we need a better config system that can be used within a mixin plugin
 public class Config {
-	private static File configFile = FabricLoader.getInstance().getConfigDir().resolve("sophisticatedfabriccompat.toml").toFile();
+	private static final File configFile = FabricLoader.getInstance().getConfigDir().resolve("sophisticatedfabriccompat.toml").toFile();
 	public static Config CONFIG;
 
-	private CommentedConfigSpec configSpec;
+	private final CommentedConfigSpec configSpec;
 	private com.electronwill.nightconfig.core.Config config;
 
+	public AudioPlayer AUDIOPLAYER;
 	public Litematica LITEMATICA;
 
 	public Config() {
 		configSpec = new CommentedConfigSpec();
 
+		AUDIOPLAYER = new AudioPlayer(configSpec);
 		LITEMATICA = new Litematica(configSpec);
 	}
 
@@ -37,6 +39,16 @@ public class Config {
 		return config;
 	}
 
+	public class AudioPlayer {
+		public AudioPlayer(CommentedConfigSpec spec) {
+			spec.comment("Enable AudioPlayer compat").define("audioplayer.enableCompat", true);
+		}
+
+		public boolean enableCompat() {
+			return config.get("audioplayer.enableCompat");
+		}
+	}
+
 	public class Litematica {
 		public Litematica(CommentedConfigSpec spec) {
 			spec.comment("Enable Litematica compat").define("litematica.enableCompat", true);
@@ -44,6 +56,7 @@ public class Config {
 			spec.comment("Enable Litematica compat for Sophisticated Storage").define("litematica.enableStorageCompat", true);
 		}
 
+		@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 		public boolean enableCompat() {
 			return config.get("litematica.enableCompat");
 		}

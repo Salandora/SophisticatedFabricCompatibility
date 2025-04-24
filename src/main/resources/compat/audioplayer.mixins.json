@@ -1,0 +1,16 @@
+{
+    "required": false,
+    "priority": 1100,
+    "compatibilityLevel": "JAVA_21",
+    "minVersion": "0.8",
+    "package": "org.github.salandora.sophisticatedfabriccompat.compat.audioplayer.mixin",
+    "plugin": "org.github.salandora.sophisticatedfabriccompat.compat.audioplayer.AudioPlayerMixinPlugin",
+    "mixins": [
+        "JukeboxUpgradeTabAdvancedMixin",
+        "JukeboxUpgradeWrapperMixin",
+        "ServerStorageSoundHandlerMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

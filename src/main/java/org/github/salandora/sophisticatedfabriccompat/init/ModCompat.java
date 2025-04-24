@@ -3,6 +3,7 @@ package org.github.salandora.sophisticatedfabriccompat.init;
 import org.github.salandora.sophisticatedfabriccompat.compat.CompatInfo;
 import org.github.salandora.sophisticatedfabriccompat.compat.CompatModIds;
 import org.github.salandora.sophisticatedfabriccompat.compat.CompatRegistry;
+import org.github.salandora.sophisticatedfabriccompat.compat.audioplayer.AudioPlayerCompat;
 import org.github.salandora.sophisticatedfabriccompat.compat.litematica.backpacks.LitematicaBackpacksCompat;
 import org.github.salandora.sophisticatedfabriccompat.compat.litematica.core.LitematicaCompat;
 import org.github.salandora.sophisticatedfabriccompat.compat.litematica.storage.LitematicaStorageCompat;
@@ -18,6 +19,7 @@ public class ModCompat {
 		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.SOPHISTICATED_BACKPACKS, null), LitematicaBackpacksCompat::new);
 		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.SOPHISTICATED_STORAGE, null), LitematicaStorageCompat::new);
 
-		// CompatRegistry.registerCompat(new CompatInfo(CompatModIds.AUDIOPLAYER, null), () -> new AudioPlayerCompat());
+		// AudioPlayer
+		CompatRegistry.registerCompat(new CompatInfo(CompatModIds.AUDIOPLAYER, null), AudioPlayerCompat::new);
 	}
 }
