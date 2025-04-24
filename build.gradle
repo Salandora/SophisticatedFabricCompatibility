@@ -266,6 +266,9 @@ dependencies {
     modCompileOnly("maven.modrinth:admiral:${project.admiral_version}")
     modCompileOnly("maven.modrinth:simple-voice-chat:${project.simple_voice_chat_version}")
     modCompileOnly("maven.modrinth:audioplayer:${project.audioplayer_version}")
+
+    // Carpetmod
+    modCompileOnly("maven.modrinth:carpet:${project.carpet_version}")
 }
 
 test {

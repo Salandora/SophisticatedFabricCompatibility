@@ -14,12 +14,14 @@ public class Config {
 	private com.electronwill.nightconfig.core.Config config;
 
 	public AudioPlayer AUDIOPLAYER;
+	public CarpetMod CARPETMOD;
 	public Litematica LITEMATICA;
 
 	public Config() {
 		configSpec = new CommentedConfigSpec();
 
 		AUDIOPLAYER = new AudioPlayer(configSpec);
+		CARPETMOD = new CarpetMod(configSpec);
 		LITEMATICA = new Litematica(configSpec);
 	}
 
@@ -46,6 +48,21 @@ public class Config {
 
 		public boolean enableCompat() {
 			return config.get("audioplayer.enableCompat");
+		}
+	}
+
+	public class CarpetMod {
+		public CarpetMod(CommentedConfigSpec spec) {
+			spec.comment("Enable Carpetmod compat").define("carpetmod.enableCompat", true);
+			spec.comment("Enable support for carpet's missingTools rule").define("carpetmod.enableCompat", true);
+		}
+
+		public boolean enableCompat() {
+			return config.get("carpetmod.enableCompat");
+		}
+
+		public boolean enableMissingTools() {
+			return config.get("carpetmod.enableMissingToolsCompat");
 		}
 	}
 
