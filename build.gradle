@@ -123,13 +123,13 @@ base {
     archivesName = "${project.mod_id}"
 }
 
-fabricApi {
+/*fabricApi {
     configureDataGeneration {
         setModId(project.mod_id)
         setOutputDirectory(getProject().file("src/generated/resources")) // Set output directory to the same as the forge version
         setClient(true)
     }
-}
+}*/
 
 loom {
     runtimeOnlyLog4j = true
