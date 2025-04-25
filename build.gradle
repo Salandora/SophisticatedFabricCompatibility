@@ -43,52 +43,6 @@ repositories {
     mavenLocal()
     mavenCentral()
 
-    maven {
-        name = 'ParchmentMC'
-        url = 'https://maven.parchmentmc.org'
-    }
-
-    maven { url = "https://mvn.devos.one/snapshots/" } // Porting Lib
-    maven { url = "https://mvn.devos.one/releases/" } // Porting Lib
-    maven {
-        name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedCore")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-        content {
-            includeGroupByRegex "sophisticatedcore.*"
-        }
-    }
-    maven {
-        name = "GitHubPackagesBackpacks"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedBackpacks")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-        content {
-            includeGroupByRegex "sophisticatedbackpacks.*"
-        }
-    }
-    maven {
-        name = "GitHubPackagesStorage"
-        url = uri("https://maven.pkg.github.com/Salandora/SophisticatedStorage")
-        credentials {
-            username = System.getenv("USERNAME")
-            password = System.getenv("READ_PACKAGES_TOKEN")
-        }
-        content {
-            includeGroupByRegex "sophisticatedstorage.*"
-        }
-    }
-
-    maven { // Forge Config API Port
-        name = "Fuzs Mod Resources"
-        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-    }
-
     exclusiveContent {
         forRepository {
             maven {
@@ -111,7 +65,96 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-    maven { url = "https://maven.terraformersmc.com/releases/" } // Emi
+    exclusiveContent {
+        forRepositories(
+                maven { url = "https://mvn.devos.one/snapshots/" },
+                maven { url = "https://mvn.devos.one/releases/" }
+        )
+        filter {
+            includeGroup "io.github.fabricators_of_create.Porting-Lib"
+        }
+    }
+
+    maven {
+        name = 'ParchmentMC'
+        url = 'https://maven.parchmentmc.org'
+    }
+    maven { url = "https://maven.fabricmc.net/" } // FAPI, Loader
+    maven { url = "https://maven.quiltmc.org/repository/release" } // QM
+    maven {
+        name = "GitHubPackages"
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedCore"
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupAndSubgroups "sophisticatedcore"
+        }
+    }
+    maven {
+        name = "GitHubPackagesBackpacks"
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedBackpacks"
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupAndSubgroups "sophisticatedbackpacks"
+        }
+    }
+    maven {
+        name = "GitHubPackagesStorage"
+        url = "https://maven.pkg.github.com/Salandora/SophisticatedStorage"
+        credentials {
+            username = System.getenv("USERNAME")
+            password = System.getenv("READ_PACKAGES_TOKEN")
+        }
+        content {
+            includeGroupAndSubgroups"sophisticatedstorage"
+        }
+    }
+    maven { // Forge Config API Port
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        content {
+            includeGroup "fuzs.forgeconfigapiport"
+        }
+    }
+    maven { // Jei
+        url = "https://modmaven.dev"
+        content {
+            includeGroup "mezz.jei"
+        }
+    }
+    maven {  // REI and deps
+        url = "https://maven.shedaniel.me/"
+        content {
+            includeGroupAndSubgroups "me.shedaniel"
+            includeGroupAndSubgroups "dev.architectury"
+        }
+    }
+    maven {  // Emi
+        url = "https://maven.terraformersmc.com/releases/"
+        content {
+            includeGroupAndSubgroups "com.terraformersmc"
+            includeGroupAndSubgroups "dev.emi"
+        }
+    }
+    maven {// Chipped
+        url "https://maven.teamresourceful.com/repository/maven-public/"
+        content {
+            includeGroupAndSubgroups "earth.terrarium"
+            includeGroupAndSubgroups "com.teamresourceful"
+        }
+    }
+    maven { // CraftingTweaks
+        url "https://maven.twelveiterations.com/repository/maven-public/"
+        content {
+            includeGroup "net.blay09.mods"
+        }
+    }
+
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
 }
 
