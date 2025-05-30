@@ -5,7 +5,7 @@
   "name": "${mod_name}",
   "description": "${mod_description}",
   "license": "${mod_license}",
-  "icon": "assets/sophisticatedfabriccompat/icon.png",
+  "icon": "assets/sophisticatedfabricintegrations/icon.png",
   "authors": ["Salandora"],
   "contact": {
     "homepage": "${mod_display_url}",
@@ -15,12 +15,11 @@
 
   "environment": "*",
   "entrypoints": {
-    "client": ["org.github.salandora.sophisticatedfabriccompat.client.SophisticatedFabricCompatClient"],
-    "main": ["org.github.salandora.sophisticatedfabriccompat.SophisticatedFabricCompat"]
+    "client": ["org.github.salandora.sophisticatedfabricintegrations.client.SophisticatedFabricIntegrationsClient"],
+    "main": ["org.github.salandora.sophisticatedfabricintegrations.SophisticatedFabricIntegrations"]
   },
 
   "mixins": [
-    "sophisticatedfabriccompat.mixins.json",
     "compat/audioplayer.mixins.json",
     "compat/carpet.mixins.json",
     "compat/litematica.mixins.json"

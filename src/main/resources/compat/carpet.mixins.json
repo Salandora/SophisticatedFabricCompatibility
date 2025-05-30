@@ -3,8 +3,8 @@
     "priority": 1100,
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
-    "package": "org.github.salandora.sophisticatedfabriccompat.compat.carpetmod.mixin",
-    "plugin": "org.github.salandora.sophisticatedfabriccompat.compat.carpetmod.CarpetmodMixinPlugin",
+    "package": "org.github.salandora.sophisticatedfabricintegrations.compat.carpetmod.mixin",
+    "plugin": "org.github.salandora.sophisticatedfabricintegrations.compat.carpetmod.CarpetmodMixinPlugin",
     "mixins": [
         "Item_missingToolsMixin"
     ],
