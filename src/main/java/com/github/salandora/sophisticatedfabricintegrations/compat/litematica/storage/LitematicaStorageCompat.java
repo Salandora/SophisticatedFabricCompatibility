@@ -2,16 +2,13 @@ package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.s
 
 import com.github.salandora.sophisticatedfabricintegrations.Config;
 import com.github.salandora.sophisticatedfabricintegrations.compat.ICompat;
-import net.minecraft.world.item.BlockItem;
 import net.p3pp3rf1y.sophisticatedstorage.block.ItemContentsStorage;
-import net.p3pp3rf1y.sophisticatedstorage.item.StackStorageWrapper;
-import net.p3pp3rf1y.sophisticatedstorage.network.StorageContentsPayload;
-
-import java.util.function.Supplier;
+import net.p3pp3rf1y.sophisticatedstorage.init.ModBlocks;
+import net.p3pp3rf1y.sophisticatedstorage.item.CapabilityStorageWrapper;
+import net.p3pp3rf1y.sophisticatedstorage.network.StorageContentsMessage;
 
 import static com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.LitematicaCompat.LITEMATICA_CAPABILITY;
 import static com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.LitematicaCompat.LitematicaWrapper;
-import static net.p3pp3rf1y.sophisticatedstorage.init.ModBlocks.ALL_STORAGECONTAINER_ITEMS;
 
 public class LitematicaStorageCompat implements ICompat {
 	@Override
@@ -22,10 +19,13 @@ public class LitematicaStorageCompat implements ICompat {
 
 		LITEMATICA_CAPABILITY.registerForItems(
 				(stack, context) ->
-						new LitematicaWrapper(
-								StackStorageWrapper.fromStack(null, stack),
-								uuid -> new StorageContentsPayload(uuid, ItemContentsStorage.get().getOrCreateStorageContents(uuid))
-						),
-				ALL_STORAGECONTAINER_ITEMS.stream().map(Supplier::get).toArray(BlockItem[]::new));
+						stack.sophisticatedLibrary_getLazyCapability(CapabilityStorageWrapper.getCapabilityInstance())
+								.map(wrapper ->
+										new LitematicaWrapper(
+												wrapper,
+												uuid -> new StorageContentsMessage(uuid, ItemContentsStorage.get().getOrCreateStorageContents(uuid))
+										)
+								).orElse(null),
+				ModBlocks.ALL_STORAGECONTAINER_ITEMS);
 	}
 }

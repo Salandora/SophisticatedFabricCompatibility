@@ -14,8 +14,8 @@ plugins {
     id 'idea'
     id 'fabric-loom' version '1.10.+'
     id 'maven-publish'
-    id "net.darkhax.curseforgegradle" version "1.1.15"
-    id "com.modrinth.minotaur" version "2.+"
+    /*id "net.darkhax.curseforgegradle" version "1.1.15"
+    id "com.modrinth.minotaur" version "2.+"*/
 }
 
 def fabricApiModules = [
@@ -25,7 +25,7 @@ def fabricApiModules = [
 ]
 
 def debugArgs = [
-        "-enableassertions",
+        // "-enableassertions",
         "-Dmixin.debug.verify=true",
         //"-Dmixin.debug.strict=true",
         //"-Dmixin.debug.countInjections=true",
@@ -156,30 +156,36 @@ repositories {
     }
 
     maven { url = "https://maven.ladysnake.org/releases" } // CCA, for Trinkets
+    maven { // Reach Entity Attributes
+        url = "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
 }
 
 group = project.mod_group_id
-version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}${getStable()}"
-logger.lifecycle("${project.name} version: ${project.version}")
-
+version = "${project.minecraft_version}-${project.mod_version}.${getBuildNumber()}"
 base {
     archivesName = "${project.mod_id}"
 }
 
-/*fabricApi {
+/*
+fabricApi {
     configureDataGeneration {
         setModId(project.mod_id)
         setOutputDirectory(getProject().file("src/generated/resources")) // Set output directory to the same as the forge version
         setClient(true)
     }
-}*/
+}
+*/
 
 loom {
     runtimeOnlyLog4j = true
 
-    mixin {
+    /*mixin {
         useLegacyMixinAp = false
-    }
+    }*/
 
     mods {
         "${mod_id}" {
@@ -195,6 +201,7 @@ loom {
             runDir "run/${project.minecraft_version}/client"
             programArg("--username Dev")
 
+            vmArgs(debugArgs)
             if (System.getenv("HOTSWAP_AGENT") != null) {
                 property("fabric.systemLibraries=" + System.getenv("HOTSWAP_AGENT"))
                 vmArg("--add-exports=java.base/sun.nio.ch=ALL-UNNAMED")
@@ -248,7 +255,6 @@ configurations.configureEach {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
     mappings(loom.layered {
         it.officialMojangMappings()
@@ -278,9 +284,9 @@ dependencies {
     if (findProject(":SophisticatedCore") != null) {
         implementation project(path: ":SophisticatedCore", configuration: "namedElements")
         var core = project(":SophisticatedCore")
-        if (core.porting_lib_modules != "none") {
-            for (def module in core.porting_lib_modules.split(',')) {
-                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.porting_lib_version+$minecraft_version")
+        if (core.port_lib_modules != "none") {
+            for (def module in core.port_lib_modules.split(',')) {
+                modApi("io.github.fabricators_of_create.Porting-Lib:${module.trim()}:$core.port_lib_version+$minecraft_version")
             }
         }
     } else {
@@ -330,27 +336,19 @@ tasks.register('validateMixinNames', ValidateMixinNameTask) {
     source(sourceSets.main.output)
 }
 
-def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release.set(targetJavaVersion)
-    }
+    it.options.encoding = 'UTF-8'
+    it.options.release = 17
 }
 
 java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
     // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
@@ -377,7 +375,7 @@ processResources {
             mod_name            : project.mod_name,
             mod_description     : project.mod_description,
             mod_license         : project.mod_license,
-            mod_version         : version.replace(getStable(), ""), // remove the getStable string so that fabric loader can catch version mismatches, only important for snapshots
+            mod_version         : version,
             mod_display_url     : project.mod_display_url,
             mod_issue_tracker_url: project.mod_issue_tracker_url,
             mod_sources_url     : project.mod_sources_url,
@@ -410,14 +408,7 @@ static def getBuildNumber() {
     if (System.getenv("GITHUB_RUN_NUMBER") != null) {
         return System.getenv("GITHUB_RUN_NUMBER").toString()
     }
-    return "9999"
-}
-
-static def getStable() {
-    if (System.getenv("GITHUB_REF") == null || System.getenv("GITHUB_REF").endsWith("-dev")) {
-        return "-SNAPSHOT"
-    }
-    return ""
+    return "1"
 }
 
 // configure the maven publication

@@ -1,9 +1,9 @@
 package com.github.salandora.sophisticatedfabricintegrations.network;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import com.github.salandora.sophisticatedfabricintegrations.init.ModPayloads;
+import me.pepperbell.simplenetworking.C2SPacket;
+import me.pepperbell.simplenetworking.S2CPacket;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -15,34 +15,34 @@ public class PacketDistributor {
 	private PacketDistributor() {
 	}
 
-	public static <T extends CustomPacketPayload> void sendToServer(T packet) {
-		ClientPlayNetworking.send(packet);
+	public static <T extends C2SPacket> void sendToServer(T packet) {
+		ModPayloads.getChannel().sendToServer(packet);
 	}
 
-	public static <T extends CustomPacketPayload> void sendToAllNear(T packet, Entity entity, double range) {
+	public static <T extends S2CPacket> void sendToAllNear(T packet, Entity entity, double range) {
 		for (ServerPlayer player : PlayerLookup.around((ServerLevel) entity.level(), entity.position(), range)) {
-			ServerPlayNetworking.send(player, packet);
+			ModPayloads.getChannel().sendToClient(packet, player);
 		}
 	}
-	public static <T extends CustomPacketPayload> void sendToAllNear(T message, Level level, Vec3 pos, int range) {
+	public static <T extends S2CPacket> void sendToAllNear(T message, Level level, Vec3 pos, int range) {
 		if (!(level instanceof ServerLevel serverLevel)) {
 			return;
 		}
 
 		sendToAllNear(message, serverLevel, pos, range);
 	}
-	public static <T extends CustomPacketPayload> void sendToAllNear(T message, ServerLevel level, Vec3 pos, int range) {
+	public static <T extends S2CPacket> void sendToAllNear(T message, ServerLevel level, Vec3 pos, int range) {
 		for (ServerPlayer player : PlayerLookup.around(level, pos, range)) {
-			ServerPlayNetworking.send(player, message);
+			ModPayloads.getChannel().sendToClient(message, player);
 		}
 	}
 
-	public static <T extends CustomPacketPayload> void sendToPlayer(Player player, T packet) {
+	public static <T extends S2CPacket> void sendToPlayer(Player player, T packet) {
 		if (player instanceof ServerPlayer serverPlayer) {
-			ServerPlayNetworking.send(serverPlayer, packet);
+			ModPayloads.getChannel().sendToClient(packet, serverPlayer);
 		}
 	}
-	public static <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T packet) {
-		ServerPlayNetworking.send(player, packet);
+	public static <T extends S2CPacket> void sendToPlayer(ServerPlayer player, T packet) {
+		ModPayloads.getChannel().sendToClient(packet, player);
 	}
 }

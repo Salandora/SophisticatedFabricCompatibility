@@ -8,16 +8,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.JukeboxSong;
+import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.level.Level;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
-import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.ITickableUpgrade;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.UpgradeWrapperBase;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeItem;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.JukeboxUpgradeWrapper;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
+import net.p3pp3rf1y.sophisticatedcore.util.NBTHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,25 +47,27 @@ public abstract class JukeboxUpgradeWrapperMixin extends UpgradeWrapperBase<Juke
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
-	private void sophisticatedfabriccompat$playDisc(ServerLevel serverLevel, UUID storageUuid, Level level, Holder<JukeboxSong> song, CallbackInfo ci) {
+	private void sophisticatedfabriccompat$playDisc(ServerLevel serverLevel, Level level, UUID storageUuid, CallbackInfo ci) {
 		CustomSound sound = CustomSound.of(getDisc());
 		if (sound != null) {
 			AudioPlayerSoundHandler.storageUUIDToDisc.put(storageUuid, new WeakReference<>(getDisc()));
 			if (entityPlaying != null) {
-				ServerStorageSoundHandler.startPlayingDisc(serverLevel, entityPlaying.position(), storageUuid, entityPlaying.getId(), song, onFinishedCallback);
+				ServerStorageSoundHandler.startPlayingDisc(serverLevel, entityPlaying.position(), storageUuid, entityPlaying.getId(), Item.getId(getDisc().getItem()), onFinishedCallback);
 			} else {
 				//noinspection DataFlowIssue
-				ServerStorageSoundHandler.startPlayingDisc(serverLevel, posPlaying, storageUuid, song, onFinishedCallback);
+				ServerStorageSoundHandler.startPlayingDisc(serverLevel, posPlaying, storageUuid, Item.getId(getDisc().getItem()), onFinishedCallback);
 			}
 
-			long audioLength;
-			try {
-				audioLength = (long)(20 * AudioManager.getLengthSeconds(AudioManager.getSound(serverLevel.getServer(), sound.getSoundId())));
-			} catch (Exception e) {
-				audioLength = song.value().lengthInTicks();
+			if (getDisc().getItem() instanceof RecordItem recordItem) {
+				long audioLength;
+				try {
+					audioLength = (long) (20 * AudioManager.getLengthSeconds(AudioManager.getSound(serverLevel.getServer(), sound.getSoundId())));
+				} catch (Exception e) {
+					audioLength = recordItem.getLengthInTicks();
+				}
+				NBTHelper.setLong(upgrade, "discFinishTime", level.getGameTime() + audioLength);
+				NBTHelper.setLong(upgrade, "discLength", audioLength);
 			}
-			upgrade.sophisticatedCore_set(AudioPlayerCompat.DISC_LENGTH, audioLength);
-			upgrade.sophisticatedCore_set(ModCoreDataComponents.DISC_FINISH_TIME, level.getGameTime() + audioLength);
 			ci.cancel();
 		} else {
 			AudioPlayerSoundHandler.storageUUIDToDisc.remove(storageUuid);

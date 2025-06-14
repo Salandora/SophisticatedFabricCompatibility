@@ -43,7 +43,7 @@ public class TrinketsCompat implements ICompat {
 
 			backpackTrinketIdentifiers.clear();
 			TrinketsApi.getTrinketComponent(player).ifPresent(comp -> {
-				ItemStack backpack = new ItemStack(ModItems.BACKPACK.get());
+				ItemStack backpack = new ItemStack(ModItems.BACKPACK);
 				for (Map.Entry<String, Map<String, TrinketInventory>> group : comp.getInventory().entrySet()) {
 					for (Map.Entry<String, TrinketInventory> inventory : group.getValue().entrySet()) {
 						TrinketInventory trinketInventory = inventory.getValue();

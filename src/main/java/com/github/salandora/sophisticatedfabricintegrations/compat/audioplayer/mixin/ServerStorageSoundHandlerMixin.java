@@ -5,7 +5,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.ServerStorageSoundHandler;
@@ -36,11 +35,11 @@ public abstract class ServerStorageSoundHandlerMixin {
 	}
 
 	@Inject(
-			method = "startPlayingDisc(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/UUID;Lnet/minecraft/core/Holder;Ljava/lang/Runnable;)V",
+			method = "startPlayingDisc(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Ljava/util/UUID;ILjava/lang/Runnable;)V",
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
-	private static void sophisticatedfabriccompat$startPlayingDisc(ServerLevel serverLevel, BlockPos position, UUID storageUuid, Holder<JukeboxSong> song, Runnable onFinishedHandler, CallbackInfo ci) {
+	private static void sophisticatedfabriccompat$startPlayingDisc(ServerLevel serverLevel, BlockPos position, UUID storageUuid, int discItemId, Runnable onFinishedHandler, CallbackInfo ci) {
 		if (AudioPlayerSoundHandler.storageUUIDToDisc.containsKey(storageUuid)) {
 			ItemStack disc = AudioPlayerSoundHandler.storageUUIDToDisc.get(storageUuid).get();
 			if (disc == null) {
@@ -65,11 +64,11 @@ public abstract class ServerStorageSoundHandlerMixin {
 	}
 
 	@Inject(
-			method = "startPlayingDisc(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;Ljava/util/UUID;ILnet/minecraft/core/Holder;Ljava/lang/Runnable;)V",
+			method = "startPlayingDisc(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;Ljava/util/UUID;IILjava/lang/Runnable;)V",
 			at = @At(value = "HEAD"),
 			cancellable = true
 	)
-	private static void sophisticatedfabriccompat$startPlayingDisc(ServerLevel serverLevel, Vec3 position, UUID storageUuid, int entityId, Holder<JukeboxSong> song, Runnable onStopHandler, CallbackInfo ci) {
+	private static void sophisticatedfabriccompat$startPlayingDisc(ServerLevel serverLevel, Vec3 position, UUID storageUuid, int entityId, int discItemId, Runnable onStopHandler, CallbackInfo ci) {
 		if (AudioPlayerSoundHandler.storageUUIDToDisc.containsKey(storageUuid)) {
 			ItemStack disc = AudioPlayerSoundHandler.storageUUIDToDisc.get(storageUuid).get();
 			if (disc == null) {
@@ -98,7 +97,7 @@ public abstract class ServerStorageSoundHandlerMixin {
 			at = @At("HEAD"),
 			cancellable = true
 	)
-	private static void sophisticatedfabriccompat$sendStopMessage(Level level, Vec3 position, UUID storageUuid, CallbackInfo ci) {
+	private static void sophisticatedfabriccompat$sendStopMessage(ServerLevel serverWorld, Vec3 position, UUID storageUuid, CallbackInfo ci) {
 		if (AudioPlayerSoundHandler.storageUUIDToDisc.containsKey(storageUuid)) {
 			AudioPlayerSoundHandler.stop(storageUuid);
 			ci.cancel();
