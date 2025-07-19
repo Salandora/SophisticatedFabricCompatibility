@@ -62,7 +62,7 @@ public class MaterialListUtilsMixin {
 		wrapper.onContentsNbtUpdated();
 
 		InventoryHandler invHandler = wrapper.getInventoryHandler();
-		int slots = invHandler.getSlotCount();
+		int slots = invHandler.getSlots();
 		for (int slot = 0; slot < slots; ++slot) {
 			ItemStack invStack = invHandler.getStackInSlot(slot);
 			if (!invStack.isEmpty()) {

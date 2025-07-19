@@ -54,7 +54,7 @@ public record RequestContentsPayload() implements CustomPacketPayload {
 
 					List<ItemStack> wrapperStacks = Lists.newArrayList();
 					InventoryHandler handler = wrapper.getInventoryHandler();
-					for (int slot = 0; slot < handler.getSlotCount(); slot++) {
+					for (int slot = 0; slot < handler.getSlots(); slot++) {
 						ItemStack wrapperStack = handler.getSlotStack(slot);
 						if (!wrapperStack.isEmpty()) {
 							wrapperStacks.add(wrapperStack);
