@@ -30,7 +30,7 @@ public class JukeboxUpgradeTabAdvancedMixin extends JukeboxUpgradeTab {
 			//noinspection DataFlowIssue
 			int remaining = (int) (finishTime - minecraft.level.getGameTime());
 
-			long audioLength = getContainer().getUpgradeWrapper().getUpgradeStack().sophisticatedCore_getOrDefault(AudioPlayerCompat.DISC_LENGTH, 1L);
+			long audioLength = getContainer().getUpgradeWrapper().getUpgradeStack().sophisticatedLibrary_getOrDefault(AudioPlayerCompat.DISC_LENGTH, 1L);
 
 			cir.setReturnValue(remaining / (float) audioLength);
 		}
