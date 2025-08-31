@@ -28,4 +28,8 @@ public class LitematicaStorageCompat implements ICompat {
 						),
 				ALL_STORAGECONTAINER_ITEMS.stream().map(Supplier::get).toArray(BlockItem[]::new));
 	}
+
+	@Override
+	public void setup() {
+	}
 }

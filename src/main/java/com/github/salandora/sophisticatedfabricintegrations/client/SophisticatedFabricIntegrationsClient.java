@@ -10,6 +10,7 @@ public class SophisticatedFabricIntegrationsClient implements ClientModInitializ
     @Override
     public void onInitializeClient() {
         ModPayloads.registerClientPayloads();
+		CompatRegistry.initCompats();
         CompatRegistry.initClientCompats();
         ClientLifecycleEvents.CLIENT_STARTED.register((Minecraft client) -> CompatRegistry.setupCompats());
     }

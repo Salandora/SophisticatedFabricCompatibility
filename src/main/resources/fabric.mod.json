@@ -20,6 +20,9 @@
     ],
     "main": [
       "com.github.salandora.sophisticatedfabricintegrations.SophisticatedFabricIntegrations"
+    ],
+    "server": [
+      "com.github.salandora.sophisticatedfabricintegrations.SophisticatedFabricIntegrations"
     ]
   },
 

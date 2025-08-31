@@ -50,4 +50,8 @@ public class LitematicaBackpacksCompat implements ICompat {
 				ModItems.BACKPACKS.stream().map(Supplier::get).toArray(BackpackItem[]::new)
 		);
 	}
+
+	@Override
+	public void setup() {
+	}
 }
