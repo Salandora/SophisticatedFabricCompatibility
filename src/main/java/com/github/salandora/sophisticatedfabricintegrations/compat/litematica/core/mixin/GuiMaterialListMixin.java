@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.mixin;
 
 import com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.network.RequestContentsPayload;
-import com.github.salandora.sophisticatedlibrary.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.network.api.v1.PacketDistributor;
 import fi.dy.masa.litematica.gui.GuiMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetListMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetMaterialListEntry;
