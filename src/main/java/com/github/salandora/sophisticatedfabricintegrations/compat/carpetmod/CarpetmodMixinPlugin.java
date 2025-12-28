@@ -14,17 +14,17 @@ import java.util.Set;
 public class CarpetmodMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return Config.CONFIG.CARPETMOD.enableCompat() && FabricLoader.getInstance().isModLoaded(CompatModIds.CARPETMOD);
+		return Config.CarpetMod.enableCompat && FabricLoader.getInstance().isModLoaded(CompatModIds.CARPETMOD);
 	}
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		if (Config.CONFIG != null) {
+		if (!Config.isLoaded()) {
 			return;
 		}
 
 		try {
-			Config.CONFIG = Config.load();
+			Config.load();
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to load config for SophisticatedFabricCompat", e);

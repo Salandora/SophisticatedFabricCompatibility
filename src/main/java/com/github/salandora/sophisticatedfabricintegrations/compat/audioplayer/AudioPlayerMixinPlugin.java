@@ -14,17 +14,17 @@ import java.util.Set;
 public class AudioPlayerMixinPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return Config.CONFIG.AUDIOPLAYER.enableCompat() && FabricLoader.getInstance().isModLoaded(CompatModIds.AUDIOPLAYER);
+		return Config.AudioPlayer.enableCompat && FabricLoader.getInstance().isModLoaded(CompatModIds.AUDIOPLAYER);
 	}
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		if (Config.CONFIG != null) {
+		if (!Config.isLoaded()) {
 			return;
 		}
 
 		try {
-			Config.CONFIG = Config.load();
+			Config.load();
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to load config for SophisticatedFabricCompat", e);

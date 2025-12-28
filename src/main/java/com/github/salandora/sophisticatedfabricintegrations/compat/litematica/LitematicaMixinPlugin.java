@@ -19,7 +19,7 @@ public class LitematicaMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (!Config.CONFIG.LITEMATICA.enableCompat() || !FabricLoader.getInstance().isModLoaded(CompatModIds.LITEMATICA)) {
+		if (!Config.Litematica.enableCompat || !FabricLoader.getInstance().isModLoaded(CompatModIds.LITEMATICA)) {
 			return false;
 		}
 
@@ -35,12 +35,12 @@ public class LitematicaMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public void onLoad(String mixinPackage) {
-		if (Config.CONFIG != null) {
+		if (!Config.isLoaded()) {
 			return;
 		}
 
 		try {
-			Config.CONFIG = Config.load();
+			Config.load();
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to load config for SophisticatedFabricCompat", e);

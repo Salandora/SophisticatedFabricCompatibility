@@ -17,9 +17,9 @@ public class SophisticatedFabricIntegrations implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        if (Config.CONFIG == null) {
-            Config.CONFIG = Config.load();
-        }
+		if (!Config.isLoaded()) {
+			Config.load();
+		}
         ModPayloads.registerPayloads();
         ModCompat.register();
 
