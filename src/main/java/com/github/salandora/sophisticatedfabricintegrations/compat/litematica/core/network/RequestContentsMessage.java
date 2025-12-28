@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.network;
 
 import com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.LitematicaCompat;
-import com.github.salandora.sophisticatedfabricintegrations.network.PacketDistributor;
+import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
 import com.google.common.collect.Lists;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -15,48 +15,50 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.InventoryHandler;
-import net.p3pp3rf1y.sophisticatedcore.network.SimplePacketBase;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public class RequestContentsMessage extends SimplePacketBase {
-
+public class RequestContentsMessage {
 	public RequestContentsMessage() {
 	}
-	public RequestContentsMessage(FriendlyByteBuf buffer) {
+
+	public static RequestContentsMessage decode(FriendlyByteBuf buffer) {
+		return new RequestContentsMessage();
 	}
 
-	@Override
-	public void write(FriendlyByteBuf buffer) {
+	public static void encode(RequestContentsMessage msg, FriendlyByteBuf buffer) {
 	}
 
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			ServerPlayer player = context.getSender();
-			if (player == null) {
-				return;
+	public static void onMessage(RequestContentsMessage msg, Supplier<NetworkEvent.Context> contextSupplier) {
+		NetworkEvent.Context context = contextSupplier.get();
+		context.enqueueWork(() -> handleMessage(contextSupplier.get().getSender(), msg));
+		context.setPacketHandled(true);
+	}
+
+	private static void handleMessage(@Nullable ServerPlayer sender, RequestContentsMessage message) {
+		if (sender == null) {
+			return;
+		}
+
+		List<ItemStack> stacks = Lists.newArrayList();
+
+		// Iterate over all slots cause this includes items, armor and offhand
+		Container inv = sender.getInventory();
+		int size = inv.getContainerSize();
+		for (int slot = 0; slot < size; ++slot) {
+			ItemStack stack = inv.getItem(slot);
+			if (!stack.isEmpty()) {
+				stacks.add(stack);
 			}
+		}
 
-			List<ItemStack> stacks = Lists.newArrayList();
-
-			// Iterate over all slots cause this includes items, armor and offhand
-			Container inv = player.getInventory();
-			int size = inv.getContainerSize();
-			for (int slot = 0; slot < size; ++slot) {
-				ItemStack stack = inv.getItem(slot);
-				if (!stack.isEmpty()) {
-					stacks.add(stack);
-				}
-			}
-
-			requestContents(stacks, packet -> PacketDistributor.sendToPlayer(context.getSender(), packet));
-		});
-		return true;
+		requestContents(stacks, packet -> LitematicaPacketHandler.INSTANCE.sendToClient(sender, packet));
 	}
 
-	public static void requestContents(List<ItemStack> stacks, Consumer<S2CPacket> consumer) {
+	public static void requestContents(List<ItemStack> stacks, Consumer<Object> consumer) {
 		for (ItemStack stack : stacks) {
 			LitematicaCompat.LitematicaWrapper litematicaWrapper = LitematicaCompat.LITEMATICA_CAPABILITY.find(stack, null);
 			if (litematicaWrapper != null) {

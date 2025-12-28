@@ -2,7 +2,6 @@ package com.github.salandora.sophisticatedfabricintegrations;
 
 import com.github.salandora.sophisticatedfabricintegrations.compat.CompatRegistry;
 import com.github.salandora.sophisticatedfabricintegrations.init.ModCompat;
-import com.github.salandora.sophisticatedfabricintegrations.init.ModPayloads;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +18,6 @@ public class SophisticatedFabricIntegrations implements ModInitializer {
 		if (!Config.isLoaded()) {
 			Config.load();
 		}
-        ModPayloads.registerPayloads();
         ModCompat.register();
 
         CompatRegistry.initCompats();

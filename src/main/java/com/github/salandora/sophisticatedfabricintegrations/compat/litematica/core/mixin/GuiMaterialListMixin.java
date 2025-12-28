@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.mixin;
 
+import com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.network.LitematicaPacketHandler;
 import com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.network.RequestContentsMessage;
-import com.github.salandora.sophisticatedfabricintegrations.network.PacketDistributor;
 import fi.dy.masa.litematica.gui.GuiMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetListMaterialList;
 import fi.dy.masa.litematica.gui.widgets.WidgetMaterialListEntry;
@@ -21,6 +21,6 @@ public abstract class GuiMaterialListMixin extends GuiListBase<MaterialListEntry
 
 	@Inject(method = "<init>", at = @At("RETURN"), remap = false)
 	private void sophisticatedfabriccompat$init(MaterialListBase materialList, CallbackInfo ci) {
-		PacketDistributor.sendToServer(new RequestContentsMessage());
+		LitematicaPacketHandler.INSTANCE.sendToServer(new RequestContentsMessage());
 	}
 }

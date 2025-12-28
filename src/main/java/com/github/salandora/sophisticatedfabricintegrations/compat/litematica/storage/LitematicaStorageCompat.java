@@ -12,7 +12,7 @@ import static com.github.salandora.sophisticatedfabricintegrations.compat.litema
 
 public class LitematicaStorageCompat implements ICompat {
 	@Override
-	public void setup() {
+	public void init() {
 		if (!Config.Litematica.enableCompat || !Config.Litematica.enableStorageCompat) {
 			return;
 		}
@@ -27,5 +27,9 @@ public class LitematicaStorageCompat implements ICompat {
 										)
 								).orElse(null),
 				ModBlocks.ALL_STORAGECONTAINER_ITEMS);
+	}
+
+	@Override
+	public void setup() {
 	}
 }
