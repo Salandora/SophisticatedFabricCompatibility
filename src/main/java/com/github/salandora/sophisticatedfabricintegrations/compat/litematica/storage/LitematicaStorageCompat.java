@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.storage;
 
+import com.github.salandora.sophisticatedfabricintegrations.Config;
 import com.github.salandora.sophisticatedfabricintegrations.compat.ICompat;
-import com.github.salandora.sophisticatedfabricintegrations.config.Config;
 import net.minecraft.world.item.BlockItem;
 import net.p3pp3rf1y.sophisticatedstorage.block.ItemContentsStorage;
 import net.p3pp3rf1y.sophisticatedstorage.item.StackStorageWrapper;

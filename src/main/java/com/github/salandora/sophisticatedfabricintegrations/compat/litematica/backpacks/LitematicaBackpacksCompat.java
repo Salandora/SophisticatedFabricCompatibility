@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.backpacks;
 
+import com.github.salandora.sophisticatedfabricintegrations.Config;
 import com.github.salandora.sophisticatedfabricintegrations.compat.ICompat;
-import com.github.salandora.sophisticatedfabricintegrations.config.Config;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;

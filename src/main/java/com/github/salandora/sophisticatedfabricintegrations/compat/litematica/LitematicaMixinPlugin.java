@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica;
 
+import com.github.salandora.sophisticatedfabricintegrations.Config;
 import com.github.salandora.sophisticatedfabricintegrations.compat.CompatModIds;
-import com.github.salandora.sophisticatedfabricintegrations.config.Config;
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;

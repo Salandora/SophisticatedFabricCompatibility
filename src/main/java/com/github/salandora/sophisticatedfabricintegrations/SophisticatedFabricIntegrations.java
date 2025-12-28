@@ -1,7 +1,6 @@
 package com.github.salandora.sophisticatedfabricintegrations;
 
 import com.github.salandora.sophisticatedfabricintegrations.compat.CompatRegistry;
-import com.github.salandora.sophisticatedfabricintegrations.config.Config;
 import com.github.salandora.sophisticatedfabricintegrations.init.ModCompat;
 import com.github.salandora.sophisticatedfabricintegrations.init.ModDataComponents;
 import com.github.salandora.sophisticatedfabricintegrations.init.ModPayloads;

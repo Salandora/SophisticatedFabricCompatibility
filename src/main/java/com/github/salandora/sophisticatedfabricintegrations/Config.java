@@ -1,6 +1,7 @@
-package com.github.salandora.sophisticatedfabricintegrations.config;
+package com.github.salandora.sophisticatedfabricintegrations;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.github.salandora.sophisticatedfabricintegrations.config.CommentedConfigSpec;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
