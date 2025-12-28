@@ -3,13 +3,13 @@
     "priority": 1100,
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
-    "package": "org.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.mixin",
-    "plugin": "org.github.salandora.sophisticatedfabricintegrations.compat.litematica.LitematicaMixinPlugin",
+    "package": "com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.mixin",
+    "plugin": "com.github.salandora.sophisticatedfabricintegrations.compat.litematica.LitematicaMixinPlugin",
     "mixins": [
-        "MaterialListUtilsMixin"
+      "MaterialListUtilsMixin"
     ],
     "client": [
-        "GuiMaterialListMixin"
+      "GuiMaterialListMixin"
     ],
     "injectors": {
         "defaultRequire": 1

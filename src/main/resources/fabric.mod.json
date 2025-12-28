@@ -15,8 +15,12 @@
 
   "environment": "*",
   "entrypoints": {
-    "client": ["org.github.salandora.sophisticatedfabricintegrations.client.SophisticatedFabricIntegrationsClient"],
-    "main": ["org.github.salandora.sophisticatedfabricintegrations.SophisticatedFabricIntegrations"]
+    "client": [
+      "com.github.salandora.sophisticatedfabricintegrations.client.SophisticatedFabricIntegrationsClient"
+    ],
+    "main": [
+      "com.github.salandora.sophisticatedfabricintegrations.SophisticatedFabricIntegrations"
+    ]
   },
 
   "mixins": [
