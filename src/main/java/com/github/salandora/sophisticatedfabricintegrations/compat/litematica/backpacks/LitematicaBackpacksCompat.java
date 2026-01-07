@@ -36,7 +36,7 @@ public class LitematicaBackpacksCompat implements ICompat {
 	}
 
 	@Override
-	public void setup() {
+	public void init() {
 		if (!Config.Litematica.enableCompat || !Config.Litematica.enableBackpacksCompat) {
 			return;
 		}

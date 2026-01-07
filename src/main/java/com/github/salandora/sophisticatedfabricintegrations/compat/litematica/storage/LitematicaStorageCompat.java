@@ -15,7 +15,7 @@ import static net.p3pp3rf1y.sophisticatedstorage.init.ModBlocks.ALL_STORAGECONTA
 
 public class LitematicaStorageCompat implements ICompat {
 	@Override
-	public void setup() {
+	public void init() {
 		if (!Config.Litematica.enableCompat || !Config.Litematica.enableStorageCompat) {
 			return;
 		}
