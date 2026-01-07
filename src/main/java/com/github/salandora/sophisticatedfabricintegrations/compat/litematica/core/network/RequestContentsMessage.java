@@ -1,7 +1,7 @@
 package com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.network;
 
 import com.github.salandora.sophisticatedfabricintegrations.compat.litematica.core.LitematicaCompat;
-import com.github.salandora.sophisticatedlibrary.network.api.v0.NetworkEvent;
+import com.github.salandora.sophisticatedfabriclib.network.api.v0.NetworkEvent;
 import com.google.common.collect.Lists;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
