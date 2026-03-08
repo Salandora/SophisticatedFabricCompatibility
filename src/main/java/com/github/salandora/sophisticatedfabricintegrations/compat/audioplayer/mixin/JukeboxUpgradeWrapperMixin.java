@@ -63,8 +63,8 @@ public abstract class JukeboxUpgradeWrapperMixin extends UpgradeWrapperBase<Juke
 			} catch (Exception e) {
 				audioLength = song.value().lengthInTicks();
 			}
-			upgrade.sophisticatedLibrary_set(AudioPlayerCompat.DISC_LENGTH, audioLength);
-			upgrade.sophisticatedLibrary_set(ModCoreDataComponents.DISC_FINISH_TIME, level.getGameTime() + audioLength);
+			upgrade.sophisticatedFabricLibrary_set(AudioPlayerCompat.DISC_LENGTH, audioLength);
+			upgrade.sophisticatedFabricLibrary_set(ModCoreDataComponents.DISC_FINISH_TIME, level.getGameTime() + audioLength);
 			ci.cancel();
 		} else {
 			AudioPlayerSoundHandler.storageUUIDToDisc.remove(storageUuid);
