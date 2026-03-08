@@ -41,7 +41,7 @@ public class LitematicaBackpacksCompat implements ICompat {
 
 		LITEMATICA_CAPABILITY.registerForItems(
 				(stack, context) ->
-						stack.sophisticatedLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
+						stack.sophisticatedFabricLibrary_getLazyCapability(CapabilityBackpackWrapper.getCapabilityInstance())
 								.map(wrapper ->
 										new LitematicaWrapper(
 												wrapper,

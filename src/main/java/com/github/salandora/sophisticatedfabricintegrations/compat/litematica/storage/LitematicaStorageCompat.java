@@ -19,7 +19,7 @@ public class LitematicaStorageCompat implements ICompat {
 
 		LITEMATICA_CAPABILITY.registerForItems(
 				(stack, context) ->
-						stack.sophisticatedLibrary_getLazyCapability(CapabilityStorageWrapper.getCapabilityInstance())
+						stack.sophisticatedFabricLibrary_getLazyCapability(CapabilityStorageWrapper.getCapabilityInstance())
 								.map(wrapper ->
 										new LitematicaWrapper(
 												wrapper,
