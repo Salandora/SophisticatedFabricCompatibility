@@ -57,8 +57,8 @@ repositories {
     exclusiveContent {
         forRepository {
             maven {
-                name "CurseForge"
-                url "https://cursemaven.com"
+                name = "CurseForge"
+                url = "https://cursemaven.com"
             }
         }
         filter {
@@ -142,14 +142,14 @@ repositories {
         }
     }
     maven {// Chipped
-        url "https://maven.teamresourceful.com/repository/maven-public/"
+        url = "https://maven.teamresourceful.com/repository/maven-public/"
         content {
             includeGroupAndSubgroups "earth.terrarium"
             includeGroupAndSubgroups "com.teamresourceful"
         }
     }
     maven { // CraftingTweaks
-        url "https://maven.twelveiterations.com/repository/maven-public/"
+        url = "https://maven.twelveiterations.com/repository/maven-public/"
         content {
             includeGroup "net.blay09.mods"
         }
@@ -336,9 +336,10 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
+def archiveBaseName = base.archivesName.get()
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.base.archivesName}"}
+        rename { "${it}_${archiveBaseName}"}
     }
 
     manifest {
@@ -369,7 +370,7 @@ processResources {
     ]
 
     inputs.properties replaceProperties
-    filteringCharset "UTF-8"
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand replaceProperties
